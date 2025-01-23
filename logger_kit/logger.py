@@ -1,38 +1,45 @@
-from typing import Any, Dict, Optional
+"""Logger module for the application.
+
+This module provides a custom logger implementation using loguru with singleton pattern
+and configuration management through Pydantic models.
+"""
+
 from loguru import logger
 import sys
-import json
-from pydantic import BaseModel
 
-class LogConfig(BaseModel):
-    """Logging configuration"""
-    LOGGER_NAME: str = "fastapi_logger"
-    LOG_FORMAT: str = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
-    LOG_LEVEL: str = "DEBUG"
+from .config import LogConfig
 
-    # Logging config
-    version: int = 1
-    disable_existing_loggers: bool = False
-    formatters: Dict[str, Dict[str, str]] = {
-        "default": {
-            "()": "uvicorn.logging.DefaultFormatter",
-            "fmt": LOG_FORMAT,
-            "datefmt": "%Y-%m-%d %H:%M:%S",
-        },
-    }
 
 class Logger:
-    """Custom logger class"""
+    """A singleton logger class that provides logging functionality.
+    
+    This class implements a singleton pattern to ensure only one logger instance
+    exists throughout the application. It uses loguru for logging and can be
+    configured using Pydantic models.
+    
+    Attributes:
+        _instance: The singleton instance of the logger.
+    """
+    
     _instance = None
 
     def __new__(cls):
+        """Create a new Logger instance if one doesn't exist.
+        
+        Returns:
+            Logger: The singleton instance of the Logger class.
+        """
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._initialize_logger()
         return cls._instance
 
     def _initialize_logger(self):
-        """Initialize logger with default configuration"""
+        """Initialize the logger with default configuration.
+        
+        This method sets up the logger with the configuration defined in LogConfig.
+        It removes any existing handlers and adds new ones for stdout and file output.
+        """
         config = LogConfig()
 
         # Remove default logger
@@ -50,40 +57,54 @@ class Logger:
         # Add file handler
         logger.add(
             "logs/app.log",
-            rotation="500 MB",
-            retention="10 days",
+            rotation="10 MB",
+            retention="1 week",
             enqueue=True,
             backtrace=True,
             level=config.LOG_LEVEL,
             format=config.LOG_FORMAT,
         )
 
-    @staticmethod
-    def format_log_msg(msg: Any) -> str:
-        """Format log message to string"""
-        if isinstance(msg, (dict, list)):
-            return json.dumps(msg, indent=2)
-        return str(msg)
+    def debug(self, message):
+        """Log a debug message.
+        
+        Args:
+            message: The message to log at debug level.
+        """
+        logger.debug(message)
 
-    def debug(self, msg: Any, **kwargs):
-        """Debug level log"""
-        logger.debug(self.format_log_msg(msg), **kwargs)
+    def info(self, message):
+        """Log an info message.
+        
+        Args:
+            message: The message to log at info level.
+        """
+        logger.info(message)
 
-    def info(self, msg: Any, **kwargs):
-        """Info level log"""
-        logger.info(self.format_log_msg(msg), **kwargs)
+    def warning(self, message):
+        """Log a warning message.
+        
+        Args:
+            message: The message to log at warning level.
+        """
+        logger.warning(message)
 
-    def warning(self, msg: Any, **kwargs):
-        """Warning level log"""
-        logger.warning(self.format_log_msg(msg), **kwargs)
+    def error(self, message):
+        """Log an error message.
+        
+        Args:
+            message: The message to log at error level.
+        """
+        logger.error(message)
 
-    def error(self, msg: Any, **kwargs):
-        """Error level log"""
-        logger.error(self.format_log_msg(msg), **kwargs)
+    def critical(self, message):
+        """Log a critical message.
+        
+        Args:
+            message: The message to log at critical level.
+        """
+        logger.critical(message)
 
-    def critical(self, msg: Any, **kwargs):
-        """Critical level log"""
-        logger.critical(self.format_log_msg(msg), **kwargs)
 
 # Create a singleton instance
 app_logger = Logger()
