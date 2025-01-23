@@ -2,7 +2,10 @@
 name = "fastapi-sub-modules-logger-kit"
 version = "0.1.0"
 description = "A FastAPI sub-module for advanced logging capabilities"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Abdullah Alqahtani <anqorithm@protonmail.com>"]
+packages = [
+    { include = "logger_kit" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -17,5 +20,5 @@ httpx = "^0.25.0"
 pytest-asyncio = "^0.21.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
