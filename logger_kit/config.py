@@ -21,14 +21,14 @@ class LogConfig(BaseModel):
         formatters: Dictionary containing formatter configurations.
     """
     
-    LOGGER_NAME = "fastapi_logger"
-    LOG_FORMAT = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
-    LOG_LEVEL = "DEBUG"
+    LOGGER_NAME: str = "fastapi_logger"
+    LOG_FORMAT: str = "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>"
+    LOG_LEVEL: str = "DEBUG"
 
     # Logging config
-    version = 1
-    disable_existing_loggers = False
-    formatters = {
+    version: int = 1
+    disable_existing_loggers: bool = False
+    formatters: dict[str, dict[str, str]] = {
         "default": {
             "()": "uvicorn.logging.DefaultFormatter",
             "fmt": LOG_FORMAT,

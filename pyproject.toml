@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-sub-modules-logger-kit"
-version = "0.1.1"
+version = "0.1.2"
 description = "A FastAPI sub-module for advanced logging capabilities"
 authors = ["Abdullah Alqahtani <anqorithm@protonmail.com>"]
 packages = [
